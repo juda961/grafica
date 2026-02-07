@@ -3,114 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gráfica Presión vs Volumen</title>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <title>Mapa Conceptual - Cultura de la muerte vs. Cultura de la vida</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
         h1 {
             text-align: center;
-            color: #333;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 2em;
+            font-weight: bold;
         }
+
         .subtitle {
             text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+            color: #4a5568;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+            font-style: italic;
         }
-        #grafica {
-            background-color: white;
-            padding: 20px;
+
+        .central-idea {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            font-size: 1.2em;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Flechas principales desde idea central */
+        .arrows-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0 30px 0;
+            gap: 40px;
+        }
+
+        .arrow-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .arrow-label {
+            background: white;
+            padding: 10px 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid;
+        }
+
+        .arrow-label-death {
+            color: #fc4a1a;
+            border-color: #fc4a1a;
+        }
+
+        .arrow-label-life {
+            color: #4facfe;
+            border-color: #4facfe;
+        }
+
+        .arrow-line {
+            width: 4px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .arrow-line-death {
+            background: linear-gradient(180deg, #fc4a1a 0%, #f7b733 100%);
+        }
+
+        .arrow-line-life {
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .arrow-head {
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 15px solid;
+        }
+
+        .arrow-head-death {
+            border-top-color: #f7b733;
+        }
+
+        .arrow-head-life {
+            border-top-color: #00f2fe;
+        }
+
+        .map-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .culture-section {
+            position: relative;
+        }
+
+        .culture-header {
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .death-header {
+            background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+        }
+
+        .life-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .aspects-list {
+            list-style: none;
+            padding: 0;
+            position: relative;
+        }
+
+        .aspect-item {
+            background: #f7fafc;
+            padding: 20px;
+            margin-bottom: 35px;
+            border-radius: 12px;
+            border-left: 5px solid;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .aspect-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .death-aspect {
+            border-left-color: #fc4a1a;
+        }
+
+        .life-aspect {
+            border-left-color: #4facfe;
+        }
+
+        .aspect-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 0.9em;
+        }
+
+        .death-number {
+            background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+        }
+
+        .life-number {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        /* Palabra conectora */
+        .connector-word {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #718096;
+            margin-right: 8px;
+            font-style: italic;
+        }
+
+        /* Flecha desde header a primer aspecto */
+        .first-arrow {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .first-arrow-line {
+            width: 3px;
+            height: 20px;
+            background: #cbd5e0;
+        }
+
+        .first-arrow-head {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #cbd5e0;
+        }
+
+        /* Flechas entre aspectos consecutivos */
+        .aspect-arrow {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: -10px 0 25px 0;
+        }
+
+        .aspect-arrow-line {
+            width: 3px;
+            height: 20px;
+            background: #cbd5e0;
+        }
+
+        .aspect-arrow-head {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #cbd5e0;
+        }
+
+        @media (max-width: 968px) {
+            .map-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .culture-header {
+                font-size: 1.3em;
+            }
+
+            .aspect-item {
+                margin-bottom: 25px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #718096;
+            font-size: 0.9em;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
         }
     </style>
 </head>
 <body>
-    <h1>Relación Presión-Volumen del Aire</h1>
-    <p class="subtitle">Ley de Boyle: A menor volumen, mayor presión</p>
-    
-    <div id="grafica"></div>
+    <div class="container">
+        <h1>Unidad 4: Cultura de la muerte vs. Cultura de la vida</h1>
+        <p class="subtitle">Mapa Conceptual</p>
 
-    <script>
-        // Datos de volumen (ml) y presión (mm Hg)
-        const volumen = [188.5, 187.5, 186.5, 185.5, 183.5, 181, 180, 178, 176.5, 175];
-        const presion = [766.61, 766.98, 767.35, 767.72, 768.82, 770.29, 770.66, 771.76, 772.5, 773.23];
+        <div class="central-idea">
+            <strong>IDEA CENTRAL:</strong> La ética distingue entre la cultura de la muerte y la cultura de la vida, proponiendo la defensa de la dignidad humana mediante principios bioéticos.
+        </div>
 
-        const trace = {
-            x: volumen,
-            y: presion,
-            mode: 'lines+markers',
-            type: 'scatter',
-            name: 'Datos experimentales',
-            line: {
-                color: '#2E86AB',
-                width: 3
-            },
-            marker: {
-                color: '#A23B72',
-                size: 10,
-                line: {
-                    color: 'white',
-                    width: 2
-                }
-            }
-        };
+        <!-- Flechas principales -->
+        <div class="arrows-container">
+            <div class="arrow-wrapper">
+                <div class="arrow-label arrow-label-death">se opone a</div>
+                <div class="arrow-line arrow-line-death"></div>
+                <div class="arrow-head arrow-head-death"></div>
+            </div>
+            <div class="arrow-wrapper">
+                <div class="arrow-label arrow-label-life">propone</div>
+                <div class="arrow-line arrow-line-life"></div>
+                <div class="arrow-head arrow-head-life"></div>
+            </div>
+        </div>
 
-        const layout = {
-            title: {
-                text: 'Presión vs Volumen',
-                font: {
-                    size: 20,
-                    color: '#333'
-                }
-            },
-            xaxis: {
-                title: {
-                    text: 'Volumen (ml)',
-                    font: {
-                        size: 16,
-                        color: '#333'
-                    }
-                },
-                gridcolor: '#e0e0e0',
-                zeroline: false,
-                autorange: 'reversed'  // Para que disminuya de izquierda a derecha
-            },
-            yaxis: {
-                title: {
-                    text: 'Presión (mm Hg)',
-                    font: {
-                        size: 16,
-                        color: '#333'
-                    }
-                },
-                gridcolor: '#e0e0e0',
-                zeroline: false
-            },
-            plot_bgcolor: '#fafafa',
-            paper_bgcolor: 'white',
-            hovermode: 'closest',
-            margin: {
-                l: 80,
-                r: 40,
-                t: 80,
-                b: 80
-            }
-        };
+        <div class="map-container">
+            <!-- Cultura de la Muerte -->
+            <div class="culture-section">
+                <div class="culture-header death-header">
+                    Cultura de la Muerte
+                </div>
+                
+                <!-- Flecha desde header a aspecto 1 -->
+                <div class="first-arrow">
+                    <div class="first-arrow-line"></div>
+                    <div class="first-arrow-head"></div>
+                </div>
+                
+                <ul class="aspects-list">
+                    <li class="aspect-item death-aspect">
+                        <span class="aspect-number death-number">1</span>
+                        <span class="connector-word">caracterizada por:</span>
+                        Promueve destrucción de personas y naturaleza (ej. guerra en Ucrania).
+                    </li>
+                    
+                    <!-- Flecha 1 → 2 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item death-aspect">
+                        <span class="aspect-number death-number">2</span>
+                        <span class="connector-word">implica:</span>
+                        Riesgos bioéticos: aborto, eutanasia, pena de muerte.
+                    </li>
+                    
+                    <!-- Flecha 2 → 3 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item death-aspect">
+                        <span class="aspect-number death-number">3</span>
+                        <span class="connector-word">genera:</span>
+                        Problemas sociales: pobreza extrema, corrupción, violencia.
+                    </li>
+                    
+                    <!-- Flecha 3 → 4 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item death-aspect">
+                        <span class="aspect-number death-number">4</span>
+                        <span class="connector-word">produce:</span>
+                        Desigualdad: afecta más a niños, adolescentes y mujeres (CEPAL).
+                    </li>
+                    
+                    <!-- Flecha 4 → 5 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item death-aspect">
+                        <span class="aspect-number death-number">5</span>
+                        <span class="connector-word">impulsada por:</span>
+                        Influencia negativa de intereses económicos y consumo de sustancias.
+                    </li>
+                </ul>
+            </div>
 
-        const config = {
-            responsive: true,
-            displayModeBar: true,
-            displaylogo: false,
-            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
-        };
+            <!-- Cultura de la Vida -->
+            <div class="culture-section">
+                <div class="culture-header life-header">
+                    Cultura de la Vida
+                </div>
+                
+                <!-- Flecha desde header a aspecto 1 -->
+                <div class="first-arrow">
+                    <div class="first-arrow-line"></div>
+                    <div class="first-arrow-head"></div>
+                </div>
+                
+                <ul class="aspects-list">
+                    <li class="aspect-item life-aspect">
+                        <span class="aspect-number life-number">1</span>
+                        <span class="connector-word">fundamentada en:</span>
+                        Defensa y respeto de la vida como opción fundamental.
+                    </li>
+                    
+                    <!-- Flecha 1 → 2 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item life-aspect">
+                        <span class="aspect-number life-number">2</span>
+                        <span class="connector-word">se basa en:</span>
+                        Principios bioéticos: autonomía, justicia, beneficencia, no maleficencia.
+                    </li>
+                    
+                    <!-- Flecha 2 → 3 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item life-aspect">
+                        <span class="aspect-number life-number">3</span>
+                        <span class="connector-word">promueve:</span>
+                        Valores adicionales: solidaridad, subsidiariedad, libertad responsable.
+                    </li>
+                    
+                    <!-- Flecha 3 → 4 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item life-aspect">
+                        <span class="aspect-number life-number">4</span>
+                        <span class="connector-word">invita a:</span>
+                        Llamados: sí a la paz, amor, verdad, diálogo, respeto a la naturaleza.
+                    </li>
+                    
+                    <!-- Flecha 4 → 5 -->
+                    <div class="aspect-arrow">
+                        <div class="aspect-arrow-line"></div>
+                        <div class="aspect-arrow-head"></div>
+                    </div>
+                    
+                    <li class="aspect-item life-aspect">
+                        <span class="aspect-number life-number">5</span>
+                        <span class="connector-word">confía en:</span>
+                        Rol de los jóvenes: construir un mundo justo y humano.
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-        Plotly.newPlot('grafica', [trace], layout, config);
-    </script>
+        <div class="footer">
+            Mapa Conceptual - UNIDAD 4 - Ética, sociedad y vida
+        </div>
+    </div>
 </body>
 </html>
